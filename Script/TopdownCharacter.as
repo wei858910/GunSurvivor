@@ -30,6 +30,15 @@ class ATopdownCharacter : APawn
     UPROPERTY(DefaultComponent, Category = "Input")
     UEnhancedInputComponent InputComponent;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float MovementSpeed = 100.0;
+
+    UPROPERTY(BlueprintReadWrite)
+    FVector2D MovementDirection = FVector2D::ZeroVector;
+
+    UPROPERTY()
+    bool bCanMove = true;
+
     UFUNCTION(BlueprintOverride)
     void BeginPlay()
     {
@@ -50,22 +59,43 @@ class ATopdownCharacter : APawn
         }
     }
 
+    UFUNCTION(BlueprintOverride)
+    void Tick(float DeltaSeconds)
+    {
+        if (bCanMove)
+        {
+            if (MovementDirection.Size() > 0.0)
+            {
+                if (MovementDirection.Size() > 1.0)
+                {
+                    MovementDirection.Normalize();
+                }
+                FVector2D DistanceToMove = MovementDirection * MovementSpeed * DeltaSeconds;
+                FVector   CurrentLocation = GetActorLocation();
+                FVector   NewLocation = CurrentLocation + FVector(DistanceToMove.X, 0.0, DistanceToMove.Y);
+                SetActorLocation(NewLocation);
+            }
+        }
+    }
+
     UFUNCTION()
     private void Move(FInputActionValue ActionValue, float32 ElapsedTime, float32 TriggeredTime, const UInputAction SourceAction)
     {
         FVector2D MoveVector = ActionValue.GetAxis2D();
-        // Print("Move: " + MoveVector.ToString());
+        if (bCanMove)
+        {
+            MovementDirection = MoveVector;
+        }
     }
 
     UFUNCTION()
     private void MoveCompleted(FInputActionValue ActionValue, float32 ElapsedTime, float32 TriggeredTime, const UInputAction SourceAction)
     {
-        PrintWarning("Move Completed");
+        MovementDirection = FVector2D::ZeroVector;
     }
 
     UFUNCTION()
     private void Shoot(FInputActionValue ActionValue, float32 ElapsedTime, float32 TriggeredTime, const UInputAction SourceAction)
     {
-        Print("Shoot");
     }
 };
