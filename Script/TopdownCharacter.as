@@ -34,6 +34,12 @@ class ATopdownCharacter : APawn
     UPROPERTY(DefaultComponent, Category = "Input")
     UEnhancedInputComponent InputComponent;
 
+    UPROPERTY()
+    FVector2D HorizontalLimits = FVector2D(-135., 135.);
+
+    UPROPERTY()
+    FVector2D VerticalLimits = FVector2D(-130., 130.);
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     float MovementSpeed = 100.0;
 
@@ -77,6 +83,15 @@ class ATopdownCharacter : APawn
                 FVector2D DistanceToMove = MovementDirection * MovementSpeed * DeltaSeconds;
                 FVector   CurrentLocation = GetActorLocation();
                 FVector   NewLocation = CurrentLocation + FVector(DistanceToMove.X, 0.0, DistanceToMove.Y);
+                if (!IsInMapBoundsHorizontal(NewLocation.X))
+                {
+                    NewLocation -= FVector(DistanceToMove.X, 0.0, 0.0);
+                }
+
+                if (!IsInMapBoundsVertical(NewLocation.Z))
+                {
+                    NewLocation -= FVector(0.0, 0.0, DistanceToMove.Y);
+                }
                 SetActorLocation(NewLocation);
             }
         }
@@ -108,5 +123,15 @@ class ATopdownCharacter : APawn
     UFUNCTION()
     private void Shoot(FInputActionValue ActionValue, float32 ElapsedTime, float32 TriggeredTime, const UInputAction SourceAction)
     {
+    }
+
+    bool IsInMapBoundsHorizontal(float XPos)
+    {
+        return (XPos > HorizontalLimits.X) && (XPos < HorizontalLimits.Y);
+    }
+
+    bool IsInMapBoundsVertical(float YPos)
+    {
+        return (YPos > VerticalLimits.X) && (YPos < VerticalLimits.Y);
     }
 };
