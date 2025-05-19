@@ -12,7 +12,7 @@ class ABullet : AActor
     default BulletSpriteComponent.TranslucentSortPriority = 10;
 
     UPROPERTY()
-    FVector2D MovementDirection = FVector2D::UnitVector;
+    FVector2D MovementDirection = FVector2D::ZeroVector;
 
     UPROPERTY()
     float MovementSpeed = 300.0;
@@ -23,7 +23,6 @@ class ABullet : AActor
     UFUNCTION(BlueprintOverride)
     void BeginPlay()
     {
-        Launch(MovementDirection, MovementSpeed);
     }
 
     UFUNCTION(BlueprintOverride)
@@ -38,7 +37,7 @@ class ABullet : AActor
         }
     }
 
-    void Launch(FVector2D Direction, float Speed)
+    void Launch(FVector2D Direction, float Speed = 300.0)
     {
         if (bIsLauched)
             return;

@@ -52,6 +52,10 @@ class ATopdownCharacter : APawn
     UPROPERTY()
     FVector2D VerticalLimits = FVector2D(-130., 130.);
 
+    UPROPERTY()
+    TSubclassOf<ABullet> BulletClass;
+    default BulletClass = ABullet;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     float MovementSpeed = 100.0;
 
@@ -60,6 +64,12 @@ class ATopdownCharacter : APawn
 
     UPROPERTY()
     bool bCanMove = true;
+
+    UPROPERTY()
+    bool bCanShoot = true;
+
+    UPROPERTY()
+    float ShootCooldownDuration = 0.3;
 
     UFUNCTION(BlueprintOverride)
     void BeginPlay()
@@ -150,6 +160,30 @@ class ATopdownCharacter : APawn
     UFUNCTION()
     private void Shoot(FInputActionValue ActionValue, float32 ElapsedTime, float32 TriggeredTime, const UInputAction SourceAction)
     {
+        if (bCanShoot)
+        {
+            bCanShoot = false;
+
+            // 生成子弹
+            if (IsValid(BulletClass))
+            {
+                ABullet Bullet = SpawnActor(BulletClass, BulletSpawnPosition.WorldLocation);
+                if (IsValid(Bullet))
+                {
+                    APlayerController PlayerController = Cast<APlayerController>(Controller);
+                    if (IsValid(PlayerController))
+                    {
+                        FVector MouseWorldLocation, MouseWorldDirection;
+                        PlayerController.DeprojectMousePositionToWorld(MouseWorldLocation, MouseWorldDirection);
+                        FVector   CurrentLocation = GetActorLocation();
+                        FVector2D BulletDirection = FVector2D(MouseWorldLocation.X - CurrentLocation.X, MouseWorldLocation.Z - CurrentLocation.Z);
+                        BulletDirection.Normalize();
+                        Bullet.Launch(BulletDirection, 1000.0);
+                    }
+                }
+            }
+            System::SetTimer(this, n"OnShootCooldownTimeout", ShootCooldownDuration, false);
+        }
     }
 
     bool IsInMapBoundsHorizontal(float XPos)
@@ -160,5 +194,11 @@ class ATopdownCharacter : APawn
     bool IsInMapBoundsVertical(float YPos)
     {
         return (YPos > VerticalLimits.X) && (YPos < VerticalLimits.Y);
+    }
+
+    UFUNCTION()
+    void OnShootCooldownTimeout()
+    {
+        bCanShoot = true;
     }
 };
