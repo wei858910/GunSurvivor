@@ -14,6 +14,18 @@ class AEnemy : AActor
     UPROPERTY()
     ATopdownCharacter Player;
 
+    UPROPERTY()
+    bool bIsAlive = true;
+
+    UPROPERTY()
+    bool bCanFollow = false;
+
+    UPROPERTY()
+    float MovementSpeed = 50.0;
+
+    UPROPERTY()
+    float StopDistance = 20.0;
+
     UFUNCTION(BlueprintOverride)
     void BeginPlay()
     {
@@ -26,8 +38,18 @@ class AEnemy : AActor
     UFUNCTION(BlueprintOverride)
     void Tick(float DeltaSeconds)
     {
-        
+        if (bIsAlive && bCanFollow && IsValid(Player))
+        {
+            FVector CurrentLocation = GetActorLocation();
+            FVector PlayerLocation = Player.GetActorLocation();
+            FVector DirectionToPlayer = PlayerLocation - CurrentLocation;
+            float   DistanceToPlayer = DirectionToPlayer.Size();
+            if (DistanceToPlayer >= StopDistance)
+            {
+                DirectionToPlayer.Normalize();
+                FVector NewLocation = CurrentLocation + DirectionToPlayer * MovementSpeed * DeltaSeconds;
+                SetActorLocation(NewLocation);
+            }
+        }
     }
-
-
 };
