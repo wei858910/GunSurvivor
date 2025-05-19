@@ -19,6 +19,18 @@ class ATopdownCharacter : APawn
     default CharacterFlipbook.SetFlipbook(IdleFlipbook);
     default CharacterFlipbook.SetCollisionProfileName(n"NoCollision");
 
+    UPROPERTY(DefaultComponent)
+    USceneComponent GunParent;
+
+    UPROPERTY(DefaultComponent, Attach = GunParent)
+    UPaperSpriteComponent GunSpriteComponent;
+    default GunSpriteComponent.SetSprite(Cast<UPaperSprite>(LoadObject(nullptr, "/Game/Assets/Sprites/Gun/sGun_Sprite.sGun_Sprite")));
+    default GunSpriteComponent.SetCollisionProfileName(n"NoCollision");
+    default GunSpriteComponent.TranslucentSortPriority = 5;
+
+    UPROPERTY(DefaultComponent, Attach = GunSpriteComponent)
+    USceneComponent BulletSpawnPosition;
+
     UPROPERTY(Category = "Input")
     UInputMappingContext InputMappingContext;
     default InputMappingContext = Cast<UInputMappingContext>(LoadObject(nullptr, "/Game/Input/IMC_GunServivors.IMC_GunServivors"));
