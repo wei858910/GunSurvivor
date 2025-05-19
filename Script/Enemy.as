@@ -8,7 +8,7 @@ class AEnemy : AActor
     UPROPERTY(DefaultComponent)
     UPaperFlipbookComponent EnemyFlipbookComponent;
     default EnemyFlipbookComponent.SetCollisionProfileName(n"NoCollision");
-    default EnemyFlipbookComponent.TranslucentSortPriority = 0;
+    default EnemyFlipbookComponent.TranslucentSortPriority = 1;
     default EnemyFlipbookComponent.SetFlipbook(Cast<UPaperFlipbook>(LoadObject(nullptr, "/Game/Assets/Flipbooks/Flipbook_EnemyRun.Flipbook_EnemyRun")));
 
     UPROPERTY()
@@ -18,7 +18,7 @@ class AEnemy : AActor
     bool bIsAlive = true;
 
     UPROPERTY()
-    bool bCanFollow = false;
+    bool bCanFollow = true;
 
     UPROPERTY()
     float MovementSpeed = 50.0;
@@ -40,6 +40,7 @@ class AEnemy : AActor
     {
         if (bIsAlive && bCanFollow && IsValid(Player))
         {
+            // 移动 Enemy 到 Player
             FVector CurrentLocation = GetActorLocation();
             FVector PlayerLocation = Player.GetActorLocation();
             FVector DirectionToPlayer = PlayerLocation - CurrentLocation;
@@ -49,6 +50,23 @@ class AEnemy : AActor
                 DirectionToPlayer.Normalize();
                 FVector NewLocation = CurrentLocation + DirectionToPlayer * MovementSpeed * DeltaSeconds;
                 SetActorLocation(NewLocation);
+            }
+
+            // 翻转 Enemy 朝向 Player
+            float FlipX = EnemyFlipbookComponent.GetWorldScale().X;
+            if (PlayerLocation.X - CurrentLocation.X >= 0.0)
+            {
+                if (FlipX < 0.0)
+                {
+                    EnemyFlipbookComponent.SetWorldScale3D(FVector(1.0, 1.0, 1.0));
+                }
+            }
+            else
+            {
+                if (FlipX > 0.0)
+                {
+                    EnemyFlipbookComponent.SetWorldScale3D(FVector(-1.0, 1.0, 1.0));
+                }
             }
         }
     }
