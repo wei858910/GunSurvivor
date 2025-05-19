@@ -84,6 +84,7 @@ class ATopdownCharacter : APawn
     UFUNCTION(BlueprintOverride)
     void Tick(float DeltaSeconds)
     {
+        // 移动 Player
         if (bCanMove)
         {
             if (MovementDirection.Size() > 0.0)
@@ -106,6 +107,19 @@ class ATopdownCharacter : APawn
                 }
                 SetActorLocation(NewLocation);
             }
+        }
+
+        // 旋转 Gun
+        APlayerController PlayerController = Cast<APlayerController>(Controller);
+        if (IsValid(PlayerController))
+        {
+            FVector MouseWorlordLocation, MouseWorldDirection;
+            PlayerController.DeprojectMousePositionToWorld(MouseWorlordLocation, MouseWorldDirection);
+            FVector  CurrentLocation = GetActorLocation();
+            FVector  Start = FVector(CurrentLocation.X, 0.0, CurrentLocation.Z);
+            FVector  Target = FVector(MouseWorlordLocation.X, 0.0, MouseWorlordLocation.Z);
+            FRotator GunParentRotator = FRotator::MakeFromX(Target - Start);
+            GunParent.SetRelativeRotation(GunParentRotator);
         }
     }
 
