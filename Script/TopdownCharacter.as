@@ -6,9 +6,13 @@ class ATopdownCharacter : APawn
     default CapsuleComp.SetCapsuleRadius(10.5);
     default CapsuleComp.SetCollisionProfileName(n"Pawn");
 
+    UPROPERTY()
     UPaperFlipbook IdleFlipbook;
-
     default IdleFlipbook = Cast<UPaperFlipbook>(LoadObject(nullptr, "/Game/Assets/Flipbooks/Flipbook_PlayerIdle.Flipbook_PlayerIdle"));
+
+    UPROPERTY()
+    UPaperFlipbook RunFlipbook;
+    default RunFlipbook = Cast<UPaperFlipbook>(LoadObject(nullptr, "/Game/Assets/Flipbooks/Flipbook_PlayerRun.Flipbook_PlayerRun"));
 
     UPROPERTY(DefaultComponent)
     UPaperFlipbookComponent CharacterFlipbook;
@@ -85,6 +89,12 @@ class ATopdownCharacter : APawn
         if (bCanMove)
         {
             MovementDirection = MoveVector;
+            CharacterFlipbook.SetFlipbook(RunFlipbook);
+            if (MoveVector.X != 0.0)
+            {
+                float X = MoveVector.X > 0.0 ? 1.0 : -1.0;
+                CharacterFlipbook.SetWorldScale3D(FVector(X, 1.0, 1.0));
+            }
         }
     }
 
@@ -92,6 +102,7 @@ class ATopdownCharacter : APawn
     private void MoveCompleted(FInputActionValue ActionValue, float32 ElapsedTime, float32 TriggeredTime, const UInputAction SourceAction)
     {
         MovementDirection = FVector2D::ZeroVector;
+        CharacterFlipbook.SetFlipbook(IdleFlipbook);
     }
 
     UFUNCTION()
