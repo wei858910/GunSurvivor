@@ -67,6 +67,7 @@ class ATopdownCharacter : APawn
         APlayerController PlayerController = Cast<APlayerController>(Controller);
         if (IsValid(PlayerController))
         {
+            PlayerController.bShowMouseCursor = true;
             InputComponent = UEnhancedInputComponent::Create(PlayerController);
             PlayerController.PushInputComponent(InputComponent);
             UEnhancedInputLocalPlayerSubsystem EnhancedInputSystem = UEnhancedInputLocalPlayerSubsystem::Get(PlayerController);
