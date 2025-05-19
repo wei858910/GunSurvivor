@@ -114,11 +114,11 @@ class ATopdownCharacter : APawn
         APlayerController PlayerController = Cast<APlayerController>(Controller);
         if (IsValid(PlayerController))
         {
-            FVector MouseWorlordLocation, MouseWorldDirection;
-            PlayerController.DeprojectMousePositionToWorld(MouseWorlordLocation, MouseWorldDirection);
+            FVector MouseWorldLocation, MouseWorldDirection;
+            PlayerController.DeprojectMousePositionToWorld(MouseWorldLocation, MouseWorldDirection);
             FVector  CurrentLocation = GetActorLocation();
             FVector  Start = FVector(CurrentLocation.X, 0.0, CurrentLocation.Z);
-            FVector  Target = FVector(MouseWorlordLocation.X, 0.0, MouseWorlordLocation.Z);
+            FVector  Target = FVector(MouseWorldLocation.X, 0.0, MouseWorldLocation.Z);
             FRotator GunParentRotator = FRotator::MakeFromX(Target - Start);
             GunParent.SetRelativeRotation(GunParentRotator);
         }
