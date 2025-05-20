@@ -9,6 +9,18 @@ class AEnemySpawner : AActor
     UPROPERTY()
     float SpwanDistance = 400.0;
 
+    UPROPERTY()
+    int32 TotalEnemyCount = 0;
+
+    UPROPERTY()
+    int32 DifficultySpikeInterval = 10;
+
+    UPROPERTY()
+    float SpawnTimeInimumLimit = 0.5;
+
+    UPROPERTY()
+    float DecreaseSpawnTimeByEveryInterval = 0.05;
+
     UFUNCTION(BlueprintOverride)
     void BeginPlay()
     {
@@ -33,11 +45,29 @@ class AEnemySpawner : AActor
 
     void SpawnEnemy()
     {
+        // 随机位置 生成敌人
         FVector RandomPosition = Math::VRand();
         RandomPosition.Y = 0.0;
         RandomPosition.Normalize();
         RandomPosition *= SpwanDistance;
         FVector EnemyLocation = GetActorLocation() + RandomPosition;
         AEnemy  Enemy = SpawnActor(EnemyClass, EnemyLocation);
+
+        // 增加难度
+        ++TotalEnemyCount;
+
+        if ((TotalEnemyCount % DifficultySpikeInterval) == 0)
+        {
+            if (SpawnTime > SpawnTimeInimumLimit)
+            {
+                SpawnTime -= DecreaseSpawnTimeByEveryInterval;
+                if (SpawnTime < SpawnTimeInimumLimit)
+                {
+                    SpawnTime = SpawnTimeInimumLimit;
+                }
+                StopSpawning();
+                StartSpawning();
+            }
+        }
     }
 };
