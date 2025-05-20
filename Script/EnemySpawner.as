@@ -23,9 +23,13 @@ class AEnemySpawner : AActor
 
     ATopdownCharacter Player;
 
+    AGunSurvivorsGameMode MyGameMode;
+
     UFUNCTION(BlueprintOverride)
     void BeginPlay()
     {
+        MyGameMode = Cast<AGunSurvivorsGameMode>(Gameplay::GetGameMode());
+
         if (!IsValid(Player))
         {
             Player = Cast<ATopdownCharacter>(Gameplay::GetActorOfClass(ATopdownCharacter));
@@ -92,5 +96,10 @@ class AEnemySpawner : AActor
     private void OnEnemyDied()
     {
         PrintWarning("EnemyDied");
+        int ScoreToAdd = 10;
+        if (IsValid(MyGameMode))
+        {
+            MyGameMode.AddScore(ScoreToAdd);
+        }
     }
 };
