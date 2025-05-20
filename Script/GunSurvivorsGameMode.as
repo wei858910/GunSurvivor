@@ -13,6 +13,9 @@ class AGunSurvivorsGameMode : AGameModeBase
 
     UGameHUD HUD;
 
+    UPROPERTY()
+    float TimeBeforeRestart = 0.3;
+
     UFUNCTION(BlueprintOverride)
     void BeginPlay()
     {
@@ -49,5 +52,16 @@ class AGunSurvivorsGameMode : AGameModeBase
         {
             HUD.SetScore(NewScore);
         }
+    }
+
+    void RestartGame()
+    {
+        System::SetTimer(this, n"OnRestartGameTimeout", 1., false, InitialStartDelay = TimeBeforeRestart);
+    }
+
+    UFUNCTION()
+    private void OnRestartGameTimeout()
+    {
+        Gameplay::OpenLevel(n"MainLevel");
     }
 };

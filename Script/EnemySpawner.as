@@ -99,7 +99,6 @@ class AEnemySpawner : AActor
     UFUNCTION()
     private void OnEnemyDied()
     {
-        PrintWarning("EnemyDied");
         int ScoreToAdd = 10;
         if (IsValid(MyGameMode))
         {
@@ -126,6 +125,11 @@ class AEnemySpawner : AActor
                     Enemy.bCanFollow = false;
                 }
             }
+        }
+
+        if (IsValid(MyGameMode))
+        {
+            MyGameMode.RestartGame();
         }
     }
 };
