@@ -8,8 +8,11 @@ class AEnemy : AActor
     UPROPERTY(DefaultComponent)
     UPaperFlipbookComponent EnemyFlipbookComponent;
     default EnemyFlipbookComponent.SetCollisionProfileName(n"NoCollision");
-    default EnemyFlipbookComponent.TranslucentSortPriority = 1;
+    default EnemyFlipbookComponent.TranslucentSortPriority = -1;
     default EnemyFlipbookComponent.SetFlipbook(Cast<UPaperFlipbook>(LoadObject(nullptr, "/Game/Assets/Flipbooks/Flipbook_EnemyRun.Flipbook_EnemyRun")));
+
+    UPROPERTY()
+    UPaperFlipbook DeadFlipbook = Cast<UPaperFlipbook>(LoadObject(nullptr, "/Game/Assets/Flipbooks/Flipbook_EnemyDead.Flipbook_EnemyDead"));
 
     UPROPERTY()
     ATopdownCharacter Player;
@@ -69,5 +72,25 @@ class AEnemy : AActor
                 }
             }
         }
+    }
+
+    void Die()
+    {
+        if (!bIsAlive)
+            return;
+        bIsAlive = false;
+        bCanFollow = false;
+        EnemyFlipbookComponent.SetFlipbook(DeadFlipbook);
+        EnemyFlipbookComponent.SetTranslucentSortPriority(-1);
+        CapsuleComponent.SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+        float DestroyTime = 10.0;
+        System::SetTimer(this, n"OnDestroyTimeout", DestroyTime, false);
+    }
+
+    UFUNCTION()
+    private void OnDestroyTimeout()
+    {
+        DestroyActor();
     }
 };

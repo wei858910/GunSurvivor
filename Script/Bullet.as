@@ -36,6 +36,7 @@ class ABullet : AActor
         if (IsValid(Enemy) && Enemy.bIsAlive)
         {
             DisableBullet();
+            Enemy.Die();
         }
     }
 
