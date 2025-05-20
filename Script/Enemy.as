@@ -24,7 +24,7 @@ class AEnemy : AActor
     bool bCanFollow = true;
 
     UPROPERTY()
-    float MovementSpeed = 50.0;
+    float MovementSpeed = 40.0;
 
     UPROPERTY()
     float StopDistance = 20.0;
