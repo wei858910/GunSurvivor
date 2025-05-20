@@ -1,3 +1,6 @@
+
+event void FPlayerDiedEvent();
+
 class ATopdownCharacter : APawn
 {
     UPROPERTY(DefaultComponent, RootComponent)
@@ -69,11 +72,18 @@ class ATopdownCharacter : APawn
     bool bCanShoot = true;
 
     UPROPERTY()
+    bool bIsAlive = true;
+
+    UPROPERTY()
     float ShootCooldownDuration = 0.3;
+
+    FPlayerDiedEvent PlayerDiedEvent;
 
     UFUNCTION(BlueprintOverride)
     void BeginPlay()
     {
+        CapsuleComp.OnComponentBeginOverlap.AddUFunction(this, n"OnOverlapBegin");
+
         APlayerController PlayerController = Cast<APlayerController>(Controller);
         if (IsValid(PlayerController))
         {
@@ -88,6 +98,23 @@ class ATopdownCharacter : APawn
                 InputComponent.BindAction(MoveAction, ETriggerEvent::Completed, FEnhancedInputActionHandlerDynamicSignature(this, n"MoveCompleted"));
                 InputComponent.BindAction(ShootAction, ETriggerEvent::Started, FEnhancedInputActionHandlerDynamicSignature(this, n"Shoot"));
                 InputComponent.BindAction(ShootAction, ETriggerEvent::Triggered, FEnhancedInputActionHandlerDynamicSignature(this, n"Shoot"));
+            }
+        }
+    }
+
+    UFUNCTION()
+    private void OnOverlapBegin(UPrimitiveComponent OverlappedComponent, AActor OtherActor, UPrimitiveComponent OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult&in SweepResult)
+    {
+        AEnemy Enemy = Cast<AEnemy>(OtherActor);
+        if (IsValid(Enemy) && Enemy.bIsAlive)
+        {
+            if (bIsAlive)
+            {
+                bIsAlive = false;
+                bCanMove = false;
+                bCanShoot = false;
+
+                PlayerDiedEvent.Broadcast();
             }
         }
     }

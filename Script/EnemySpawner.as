@@ -33,6 +33,10 @@ class AEnemySpawner : AActor
         if (!IsValid(Player))
         {
             Player = Cast<ATopdownCharacter>(Gameplay::GetActorOfClass(ATopdownCharacter));
+            if (IsValid(Player))
+            {
+                Player.PlayerDiedEvent.AddUFunction(this, n"OnPlayerDead");
+            }
         }
         StartSpawning();
     }
@@ -100,6 +104,28 @@ class AEnemySpawner : AActor
         if (IsValid(MyGameMode))
         {
             MyGameMode.AddScore(ScoreToAdd);
+        }
+    }
+
+    UFUNCTION()
+    private void OnPlayerDead()
+    {
+        StopSpawning();
+
+        TArray<AActor> EnemyArray;
+
+        Gameplay::GetAllActorsOfClass(AEnemy, EnemyArray);
+
+        for (auto EnemyItem : EnemyArray)
+        {
+            AEnemy Enemy = Cast<AEnemy>(EnemyItem);
+            if (IsValid(Enemy))
+            {
+                if (Enemy.bIsAlive)
+                {
+                    Enemy.bCanFollow = false;
+                }
+            }
         }
     }
 };
