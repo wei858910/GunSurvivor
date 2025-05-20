@@ -20,9 +20,32 @@ class ABullet : AActor
     UPROPERTY()
     bool bIsLauched = false;
 
+    UPROPERTY()
+    bool bIsEnable = false;
+
     UFUNCTION(BlueprintOverride)
     void BeginPlay()
     {
+        SphereComponent.OnComponentBeginOverlap.AddUFunction(this, n"OnOverlapBegin");
+    }
+
+    UFUNCTION()
+    private void OnOverlapBegin(UPrimitiveComponent OverlappedComponent, AActor OtherActor, UPrimitiveComponent OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult&in SweepResult)
+    {
+        AEnemy Enemy = Cast<AEnemy>(OtherActor);
+        if (IsValid(Enemy) && Enemy.bIsAlive)
+        {
+            DisableBullet();
+        }
+    }
+
+    void DisableBullet()
+    {
+        if (bIsEnable)
+            return;
+        bIsEnable = true;
+        SphereComponent.SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        BulletSpriteComponent.DestroyComponent(BulletSpriteComponent);
     }
 
     UFUNCTION(BlueprintOverride)
