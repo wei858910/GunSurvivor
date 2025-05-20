@@ -1,3 +1,5 @@
+event void FEnemyDiedEvent();
+
 class AEnemy : AActor
 {
     UPROPERTY(DefaultComponent, RootComponent)
@@ -29,10 +31,11 @@ class AEnemy : AActor
     UPROPERTY()
     float StopDistance = 20.0;
 
+    FEnemyDiedEvent EnemyDiedEvent;
+
     UFUNCTION(BlueprintOverride)
     void BeginPlay()
     {
-       
     }
 
     UFUNCTION(BlueprintOverride)
@@ -80,6 +83,8 @@ class AEnemy : AActor
         EnemyFlipbookComponent.SetFlipbook(DeadFlipbook);
         EnemyFlipbookComponent.SetTranslucentSortPriority(-1);
         CapsuleComponent.SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+        EnemyDiedEvent.Broadcast();
 
         float DestroyTime = 10.0;
         System::SetTimer(this, n"OnDestroyTimeout", DestroyTime, false);

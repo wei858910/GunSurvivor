@@ -84,6 +84,13 @@ class AEnemySpawner : AActor
         {
             Enemy.Player = Player;
             Enemy.bCanFollow = true;
+            Enemy.EnemyDiedEvent.AddUFunction(this, n"OnEnemyDied");
         }
+    }
+
+    UFUNCTION()
+    private void OnEnemyDied()
+    {
+        PrintWarning("EnemyDied");
     }
 };
