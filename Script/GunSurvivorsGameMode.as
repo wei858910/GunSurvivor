@@ -8,10 +8,29 @@ class AGunSurvivorsGameMode : AGameModeBase
     UPROPERTY()
     int32 Score = 0;
 
+    UPROPERTY()
+    TSubclassOf<UGameHUD> WidgetClass = Cast<UClass>(LoadObject(nullptr, "/Game/BP/BP_GameHUD.BP_GameHUD_C"));
+
+    UGameHUD HUD;
+
     UFUNCTION(BlueprintOverride)
     void BeginPlay()
     {
         SetScore(0);
+        if (IsValid(WidgetClass))
+        {
+            APlayerController PC = Gameplay::GetPlayerController(0);
+            if (IsValid(PC))
+            {
+                UUserWidget Widget = WidgetBlueprint::CreateWidget(WidgetClass, PC);
+                HUD = Cast<UGameHUD>(Widget); // 假设 Widget 是 UGameHU
+                if (IsValid(HUD))
+                {
+                    HUD.SetScore(0);     // 假设 SetScore 是 UGameHUD 中的一个函数
+                    HUD.AddToViewport(); // 将 Widget 添加到视口
+                }
+            }
+        }
     }
 
     void SetScore(int32 NewScore)
@@ -26,6 +45,9 @@ class AGunSurvivorsGameMode : AGameModeBase
     {
         int32 NewScore = Score + Increment;
         SetScore(NewScore);
-        Print(f"Score: {NewScore}");
+        if (IsValid(HUD))
+        {
+            HUD.SetScore(NewScore);
+        }
     }
 };
