@@ -21,9 +21,15 @@ class AEnemySpawner : AActor
     UPROPERTY()
     float DecreaseSpawnTimeByEveryInterval = 0.05;
 
+    ATopdownCharacter Player;
+
     UFUNCTION(BlueprintOverride)
     void BeginPlay()
     {
+        if (!IsValid(Player))
+        {
+            Player = Cast<ATopdownCharacter>(Gameplay::GetActorOfClass(ATopdownCharacter));
+        }
         StartSpawning();
     }
 
@@ -52,6 +58,7 @@ class AEnemySpawner : AActor
         RandomPosition *= SpwanDistance;
         FVector EnemyLocation = GetActorLocation() + RandomPosition;
         AEnemy  Enemy = SpawnActor(EnemyClass, EnemyLocation);
+        SetupEnemy(Enemy);
 
         // 增加难度
         ++TotalEnemyCount;
@@ -68,6 +75,15 @@ class AEnemySpawner : AActor
                 StopSpawning();
                 StartSpawning();
             }
+        }
+    }
+
+    void SetupEnemy(AEnemy Enemy)
+    {
+        if (IsValid(Enemy))
+        {
+            Enemy.Player = Player;
+            Enemy.bCanFollow = true;
         }
     }
 };

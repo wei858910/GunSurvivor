@@ -32,10 +32,7 @@ class AEnemy : AActor
     UFUNCTION(BlueprintOverride)
     void BeginPlay()
     {
-        if (!IsValid(Player))
-        {
-            Player = Cast<ATopdownCharacter>(Gameplay::GetActorOfClass(ATopdownCharacter));
-        }
+       
     }
 
     UFUNCTION(BlueprintOverride)
