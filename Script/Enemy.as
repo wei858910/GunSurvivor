@@ -33,6 +33,9 @@ class AEnemy : AActor
 
     FEnemyDiedEvent EnemyDiedEvent;
 
+    UPROPERTY()
+    USoundBase DieSound = Cast<USoundBase>(LoadObject(nullptr, "/Game/Assets/Sounds/aDeath.aDeath"));
+
     UFUNCTION(BlueprintOverride)
     void BeginPlay()
     {
@@ -85,6 +88,8 @@ class AEnemy : AActor
         CapsuleComponent.SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
         EnemyDiedEvent.Broadcast();
+
+        Gameplay::PlaySound2D(DieSound);
 
         float DestroyTime = 10.0;
         System::SetTimer(this, n"OnDestroyTimeout", DestroyTime, false);

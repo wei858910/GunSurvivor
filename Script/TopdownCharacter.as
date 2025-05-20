@@ -79,6 +79,12 @@ class ATopdownCharacter : APawn
 
     FPlayerDiedEvent PlayerDiedEvent;
 
+    UPROPERTY()
+    USoundBase BulletShootSoud = Cast<USoundBase>(LoadObject(nullptr, "/Game/Assets/Sounds/aBullet.aBullet"));
+
+    UPROPERTY()
+    USoundBase DieSound = Cast<USoundBase>(LoadObject(nullptr, "/Game/Assets/Sounds/aDeath.aDeath"));
+
     UFUNCTION(BlueprintOverride)
     void BeginPlay()
     {
@@ -110,6 +116,7 @@ class ATopdownCharacter : APawn
         {
             if (bIsAlive)
             {
+                Gameplay::PlaySound2D(DieSound);
                 bIsAlive = false;
                 bCanMove = false;
                 bCanShoot = false;
@@ -181,7 +188,10 @@ class ATopdownCharacter : APawn
     private void MoveCompleted(FInputActionValue ActionValue, float32 ElapsedTime, float32 TriggeredTime, const UInputAction SourceAction)
     {
         MovementDirection = FVector2D::ZeroVector;
-        CharacterFlipbook.SetFlipbook(IdleFlipbook);
+        if (bIsAlive)
+        {
+            CharacterFlipbook.SetFlipbook(IdleFlipbook);
+        }
     }
 
     UFUNCTION()
@@ -189,6 +199,7 @@ class ATopdownCharacter : APawn
     {
         if (bCanShoot)
         {
+            Gameplay::PlaySound2D(BulletShootSoud);
             bCanShoot = false;
 
             // 生成子弹
@@ -226,6 +237,9 @@ class ATopdownCharacter : APawn
     UFUNCTION()
     void OnShootCooldownTimeout()
     {
-        bCanShoot = true;
+        if (bIsAlive)
+        {
+            bCanShoot = true;
+        }
     }
 };
